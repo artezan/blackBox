@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { model, Schema, Document, connection } from "mongoose";
 import User, { IUser } from "../models/User";
 import * as smr from "smr";
+import * as brain from "brain.js";
 
 export class GeneralRouter {
   public router: Router;
@@ -139,11 +140,51 @@ export class GeneralRouter {
   //   res.status(200).json({ calculateCoefficients: coefficients });
   //   console.log(regression.hypothesize({ x: [1, 2] }));
   // }
+  brainTS(req: Request, res: Response): void {
+    const net = new brain.NeuralNetwork();
+
+    // net.train([
+    //   { input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 } },
+    //   { input: { r: 0.16, g: 0.09, b: 0.2 }, output: { white: 1 } },
+    //   { input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 } }
+    // ]);
+    // const dataUser: any = { r: 1, g: 0.4, b: 0 };
+    // const output = net.run(dataUser); // { white: 0.99, black: 0.002 }
+    // console.log(output);
+    connection.db
+      .collection("Llamadas-vendidos")
+      .find({})
+      .toArray((err, result) => {
+        const arr = [];
+        result.forEach(item => {
+          arr.push({
+            input: { x: item['"No Llamadas"'] },
+            output: { y: item['"No. equipos vendidos"'] }
+          });
+        });
+        net
+          .trainAsync(arr)
+          .then(res => {
+            // do something with my trained network
+            const dataUser: any = { x: 20 };
+            const output = net.run(dataUser);
+            console.log(output);
+          })
+          .catch();
+        // net.train(arr);
+        // const dataUser: any = { x: 100 };
+        // const output = net.run(dataUser); // { white: 0.99, black: 0.002 }
+        // console.log(arr);
+        // console.log(output);
+        res.status(200).json({ result });
+      });
+  }
   public routes() {
     this.router.post("/:tableName", this.uploadMongo);
     // this.router.post("/regression/:numX", this.getRegression);
     this.router.get("/:tableName", this.all);
     this.router.get("/sumary/:tableName", this.sumaryItem);
+    this.router.get("/brain/brain", this.brainTS);
     this.router.delete("/:tableName", this.delete);
   }
 }
