@@ -174,10 +174,21 @@ class GeneralRouter {
             res.status(200).json({ result });
         });
     }
+    getTableById(req, res) {
+        const tableName = req.body.tableName;
+        const itemId = req.body.itemId;
+        console.log(itemId);
+        mongoose_1.connection.db
+            .collection(tableName)
+            .find({ _id: mongoose_1.Types.ObjectId(itemId) })
+            .toArray((err, result) => {
+            res.status(200).json({ result });
+        });
+    }
     routes() {
         this.router.post("/:tableName", this.uploadMongo);
-        // this.router.post("/regression/:numX", this.getRegression);
         this.router.get("/:tableName", this.all);
+        this.router.post("/id/item", this.getTableById);
         this.router.get("/sumary/:tableName", this.sumaryItem);
         this.router.get("/brain/brain", this.brainTS);
         this.router.delete("/:tableName", this.delete);

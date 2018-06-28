@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { model, Schema, Document, connection } from "mongoose";
+import { model, Schema, Document, connection, Types } from "mongoose";
 import User, { IUser } from "../models/User";
 import * as smr from "smr";
 import * as brain from "brain.js";
@@ -179,10 +179,21 @@ export class GeneralRouter {
         res.status(200).json({ result });
       });
   }
+  getTableById(req: Request, res: Response): void {
+    const tableName = req.body.tableName;
+    const itemId = req.body.itemId;
+    console.log(itemId);
+    connection.db
+      .collection(tableName)
+      .find({ _id: Types.ObjectId(itemId) })
+      .toArray((err, result) => {
+        res.status(200).json({ result });
+      });
+  }
   public routes() {
     this.router.post("/:tableName", this.uploadMongo);
-    // this.router.post("/regression/:numX", this.getRegression);
     this.router.get("/:tableName", this.all);
+    this.router.post("/id/item", this.getTableById);
     this.router.get("/sumary/:tableName", this.sumaryItem);
     this.router.get("/brain/brain", this.brainTS);
     this.router.delete("/:tableName", this.delete);
