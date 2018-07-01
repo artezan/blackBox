@@ -77,10 +77,10 @@ export class DialogFlow {
           numString: number;
           numNumber: number;
         } = await this.getOne(option.toString());
-        conv.ask("Este es la información de la tabla seleccionada  ");
+        conv.ask("Esta es la información de la tabla seleccionada  ");
         conv.ask(
           new BasicCard({
-            title: "Este es la información de " + option.toString(),
+            title: "Esta es la información de " + option.toString(),
             text: `**Numero de Elemntos:**
                     ${tableSelect.arrSize}  \n ***Tipo Caracter:*** ${
               tableSelect.numString
@@ -97,10 +97,10 @@ export class DialogFlow {
         // DETALLES ITEM
       } else if (this.tableName !== undefined) {
         const strResult = await this.getOneById(option.toString());
-        conv.ask("Este es la información del elemento seleccionado");
+        conv.ask("Esta es la información del elemento seleccionado");
         conv.ask(
           new BasicCard({
-            title: "Este es la información",
+            title: "Esta es la información",
             text: strResult
           })
         );

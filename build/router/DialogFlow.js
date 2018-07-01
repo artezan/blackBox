@@ -61,9 +61,9 @@ class DialogFlow {
             else if (this.tableName === undefined) {
                 this.tableName = option.toString();
                 const tableSelect = yield this.getOne(option.toString());
-                conv.ask("Este es la información de la tabla seleccionada  ");
+                conv.ask("Esta es la información de la tabla seleccionada  ");
                 conv.ask(new actions_on_google_1.BasicCard({
-                    title: "Este es la información de " + option.toString(),
+                    title: "Esta es la información de " + option.toString(),
                     text: `**Numero de Elemntos:**
                     ${tableSelect.arrSize}  \n ***Tipo Caracter:*** ${tableSelect.numString} elementos  \n ***Tipo Numérico:*** ${tableSelect.numNumber} elementos `,
                     image: new actions_on_google_1.Image({
@@ -76,9 +76,9 @@ class DialogFlow {
             }
             else if (this.tableName !== undefined) {
                 const strResult = yield this.getOneById(option.toString());
-                conv.ask("Este es la información del elemento seleccionado");
+                conv.ask("Esta es la información del elemento seleccionado");
                 conv.ask(new actions_on_google_1.BasicCard({
-                    title: "Este es la información",
+                    title: "Esta es la información",
                     text: strResult
                 }));
                 conv.ask(new actions_on_google_1.Suggestions(["Ver otro elemento", "Salir"]));
