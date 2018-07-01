@@ -10,12 +10,12 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const logger = require("morgan");
 const general_1 = require("./router/general");
+const DialogFlow_1 = require("./router/DialogFlow");
 class Server {
     constructor() {
-        // public postRouter = new PostRouter();
         this.userRouter = new user_1.UserRouter();
-        // public BookRouter = new BookRouter();
         this.generalRouter = new general_1.GeneralRouter();
+        this.dialogRouter = new DialogFlow_1.DialogFlow();
         this.app = express();
         this.config();
         this.routes();
@@ -51,7 +51,7 @@ class Server {
         // this.app.use("/api/v1/posts", this.postRouter.router);
         this.app.use("/api/v1/users", this.userRouter.router);
         // this.app.use("/api/v1/books", this.BookRouter.router);
-        // this.app.use("/api/v1/dialog", this.dialogRouter.router);
+        this.app.use("/api/v1/dialog", this.dialogRouter.router);
         this.app.use("/api/v1/general", this.generalRouter.router);
     }
 }

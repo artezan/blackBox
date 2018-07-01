@@ -9,12 +9,13 @@ import * as mongoose from "mongoose";
 import * as logger from "morgan";
 import * as path from "path";
 import { GeneralRouter } from "./router/general";
+import { DialogFlow } from "./router/DialogFlow";
 
 class Server {
-  // public postRouter = new PostRouter();
   public userRouter = new UserRouter();
-  // public BookRouter = new BookRouter();
   public generalRouter = new GeneralRouter();
+  public dialogRouter = new DialogFlow();
+
 
   // set app to be of type express.Application
   public app: express.Application;
@@ -67,7 +68,7 @@ class Server {
     // this.app.use("/api/v1/posts", this.postRouter.router);
     this.app.use("/api/v1/users", this.userRouter.router);
     // this.app.use("/api/v1/books", this.BookRouter.router);
-    // this.app.use("/api/v1/dialog", this.dialogRouter.router);
+    this.app.use("/api/v1/dialog", this.dialogRouter.router);
     this.app.use("/api/v1/general", this.generalRouter.router);
   }
 }
