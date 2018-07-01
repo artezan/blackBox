@@ -10,12 +10,13 @@ import * as logger from "morgan";
 import * as path from "path";
 import { GeneralRouter } from "./router/general";
 import { DialogFlow } from "./router/DialogFlow";
+import { FileUpload } from "./router/Files";
 
 class Server {
   public userRouter = new UserRouter();
   public generalRouter = new GeneralRouter();
   public dialogRouter = new DialogFlow();
-
+  public filesRouter = new FileUpload();
 
   // set app to be of type express.Application
   public app: express.Application;
@@ -65,11 +66,10 @@ class Server {
     const router: express.Router = express.Router();
 
     this.app.use("/", router);
-    // this.app.use("/api/v1/posts", this.postRouter.router);
     this.app.use("/api/v1/users", this.userRouter.router);
-    // this.app.use("/api/v1/books", this.BookRouter.router);
     this.app.use("/api/v1/dialog", this.dialogRouter.router);
     this.app.use("/api/v1/general", this.generalRouter.router);
+    this.app.use("/api/v1/files", this.filesRouter.router);
   }
 }
 

@@ -11,11 +11,13 @@ const mongoose = require("mongoose");
 const logger = require("morgan");
 const general_1 = require("./router/general");
 const DialogFlow_1 = require("./router/DialogFlow");
+const Files_1 = require("./router/Files");
 class Server {
     constructor() {
         this.userRouter = new user_1.UserRouter();
         this.generalRouter = new general_1.GeneralRouter();
         this.dialogRouter = new DialogFlow_1.DialogFlow();
+        this.filesRouter = new Files_1.FileUpload();
         this.app = express();
         this.config();
         this.routes();
@@ -48,11 +50,10 @@ class Server {
     routes() {
         const router = express.Router();
         this.app.use("/", router);
-        // this.app.use("/api/v1/posts", this.postRouter.router);
         this.app.use("/api/v1/users", this.userRouter.router);
-        // this.app.use("/api/v1/books", this.BookRouter.router);
         this.app.use("/api/v1/dialog", this.dialogRouter.router);
         this.app.use("/api/v1/general", this.generalRouter.router);
+        this.app.use("/api/v1/files", this.filesRouter.router);
     }
 }
 // export
