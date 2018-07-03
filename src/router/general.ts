@@ -216,8 +216,14 @@ export class GeneralRouter {
         if (!isNaN(question[0])) {
           const net = new brain.NeuralNetwork();
           net.train(orderedData);
-          const prediction = net.run(question);
-          res.status(200).json({ data: prediction });
+          const prediction: any[] = net.run(question);
+          let result = "";
+          prediction.forEach((pos, i) => {
+            if (Math.round(pos) === 1) {
+              result = arrTempLabels[i];
+            }
+          });
+          res.status(200).json({ data: result });
         } else {
           const net = new brain.recurrent.LSTM();
           net.train(orderedData, { iterations: 500 });
