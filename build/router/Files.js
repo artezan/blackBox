@@ -18,6 +18,7 @@ class FileUpload {
         this.routes();
     }
     all(req, res) {
+        const t = this;
         const buffer = req.file.buffer;
         mammoth
             .extractRawText({ buffer: req.file.buffer })
@@ -36,6 +37,7 @@ class FileUpload {
                 }
                 index[word]++;
             });
+            // const index =  t.countWords(text);
             res.status(200).json({ data: index });
         })
             .done();
@@ -60,6 +62,21 @@ class FileUpload {
             const result = yield promise;
             return result;
         });
+    }
+    countWords2(sentence) {
+        const index = {};
+        const words = sentence
+            .replace(/[.,?!;()"'-]/g, " ")
+            .replace(/\s+/g, " ")
+            .toLowerCase()
+            .split(" ");
+        words.forEach(word => {
+            if (!index.hasOwnProperty(word)) {
+                index[word] = 0;
+            }
+            index[word]++;
+        });
+        return index;
     }
     routes() {
         this.router.post("/", uploadService.single("file"), this.all);

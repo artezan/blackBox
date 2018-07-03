@@ -141,43 +141,107 @@ export class GeneralRouter {
   //   console.log(regression.hypothesize({ x: [1, 2] }));
   // }
   brainTS(req: Request, res: Response): void {
-    const net = new brain.NeuralNetwork();
-
-    // net.train([
-    //   { input: { r: 0.03, g: 0.7, b: 0.5 }, output: { black: 1 } },
-    //   { input: { r: 0.16, g: 0.09, b: 0.2 }, output: { white: 1 } },
-    //   { input: { r: 0.5, g: 0.5, b: 1.0 }, output: { white: 1 } }
-    // ]);
-    // const dataUser: any = { r: 1, g: 0.4, b: 0 };
-    // const output = net.run(dataUser); // { white: 0.99, black: 0.002 }
-    // console.log(output);
+    // Recibe data
+    const tableName: string = req.body.tableName;
+    const keysInput: any[] = req.body.input;
+    const question: any[] = req.body.question;
+    const keyOutput = req.body.output;
+    const isString: boolean = req.body.isString;
+    const arrInput = [];
+    const arrOutput = [];
     connection.db
-      .collection("Llamadas-vendidos")
+      .collection(tableName)
       .find({})
       .toArray((err, result) => {
-        const arr = [];
+        // construir labels de outputs
+        const arrTempLabels = [];
         result.forEach(item => {
-          arr.push({
-            input: { x: item['"No Llamadas"'] },
-            output: { y: item['"No. equipos vendidos"'] }
-          });
+          if (item[keyOutput]) {
+            const pos = arrTempLabels.indexOf(item[keyOutput]);
+            if (pos === -1) {
+              arrTempLabels.push(item[keyOutput]);
+            }
+          }
         });
-        net
-          .trainAsync(arr)
-          .then(res => {
-            // do something with my trained network
-            const dataUser: any = { x: 20 };
-            const output = net.run(dataUser);
-            console.log(output);
-          })
-          .catch();
-        // net.train(arr);
-        // const dataUser: any = { x: 100 };
-        // const output = net.run(dataUser); // { white: 0.99, black: 0.002 }
-        // console.log(arr);
-        // console.log(output);
-        res.status(200).json({ result });
+        // construir arreglo output numerico y input
+        result.forEach(item => {
+          const arrTempInput = [];
+          let arrTempOutput = [];
+          // inputs
+          keysInput.forEach(key => {
+            if (item[key] && !isString) {
+              arrTempInput.push(item[key]);
+            } else if (item[key] && isString) {
+              arrTempInput.push(item[key].toString());
+            }
+          });
+          // outputs
+          if (isString) {
+            arrTempOutput = item[keyOutput];
+          } else {
+            arrTempLabels.forEach((label, i) => {
+              if (item[keyOutput] === label) {
+                arrTempOutput[i] = 1;
+              } else {
+                arrTempOutput[i] = 0;
+              }
+            });
+          }
+          arrInput.push(arrTempInput);
+          arrOutput.push(arrTempOutput);
+        });
+        //  ordena y junta datos
+        const orderedData = arrInput.map((sample, index) => {
+          return {
+            input: sample,
+            output: arrOutput[index]
+          };
+        });
+        // START recorre el arreglo
+        let currentIndex = orderedData.length;
+        let temporaryValue;
+        let randomIndex;
+        while (0 !== currentIndex) {
+          // Pick a remaining element...
+          randomIndex = Math.floor(Math.random() * currentIndex);
+          currentIndex -= 1;
+
+          // And swap it with the current element.
+          temporaryValue = orderedData[currentIndex];
+          orderedData[currentIndex] = orderedData[randomIndex];
+          orderedData[randomIndex] = temporaryValue;
+        }
+        // END mezclar datos
+        // START prediction
+        if (!isNaN(question[0])) {
+          const net = new brain.NeuralNetwork();
+          net.train(orderedData);
+          const prediction = net.run(question);
+          res.status(200).json({ data: prediction });
+        } else {
+          const net = new brain.recurrent.LSTM();
+          net.train(orderedData, { iterations: 500 });
+          const prediction = net.run(question);
+          console.log(prediction);
+          res.status(200).json({ data: prediction });
+        }
       });
+    // END prediction
+  }
+  brain2() {
+    console.log("algo");
+    const net = new brain.recurrent.LSTM();
+
+    net.train(
+      [
+        { input: ["a", "b", "1"], output: "happy" },
+        { input: ["z", "y", "2"], output: "sad" }
+      ],
+      { iterations: 1000 }
+    );
+
+    const output = net.run(["z", "y", "2"]); // 'happy'
+    console.log(output);
   }
   getTableById(req: Request, res: Response): void {
     const tableName = req.body.tableName;
@@ -195,7 +259,8 @@ export class GeneralRouter {
     this.router.get("/:tableName", this.all);
     this.router.post("/id/item", this.getTableById);
     this.router.get("/sumary/:tableName", this.sumaryItem);
-    this.router.get("/brain/brain", this.brainTS);
+    this.router.post("/brain/brain", this.brainTS);
+    this.router.get("/brain/brain2", this.brain2);
     this.router.delete("/:tableName", this.delete);
   }
 }
