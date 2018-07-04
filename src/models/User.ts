@@ -26,7 +26,8 @@ export interface IUser extends Document {
   createdAt?: Date;
   email?: string;
   password?: string;
-  tables?: [{ name: string; date: Date }];
+  typeDoc?: string;
+  tables?: [{ name: string; date: Date; typeDoc?: string }];
 }
 
 export default model<IUser>("user-tesis", UserSchema, "user-tesis");
