@@ -12,6 +12,8 @@ class GeneralRouter {
     uploadMongo(req, res) {
         // usuario
         const emailUser = req.headers.email;
+        // tipo
+        const type = req.headers.type;
         // nombre de tabla
         const tableName = req.params.tableName;
         // obtiene todos para generar la db
@@ -30,7 +32,11 @@ class GeneralRouter {
                 // actualiza tables en user
                 User_1.default.findOne({ email: emailUser })
                     .then(user => {
-                    user.tables.push({ name: tableName, date: date });
+                    user.tables.push({
+                        name: tableName,
+                        date: date,
+                        type: type
+                    });
                     user.save().then(() => {
                         res.status(200).json({ data: data.ops });
                     });
@@ -43,25 +49,6 @@ class GeneralRouter {
                 res.status(500).json({ error });
             });
         });
-        // guarda el json en la db
-        // general.collection
-        //   .insert(arrDocuments)
-        //   .then(data => {
-        //     User.findOne({ email: emailUser })
-        //       .then(user => {
-        //         user.tables.push(tableName);
-        //         user.save().then(() => {
-        //           res.status(200).json({ data });
-        //         });
-        //       })
-        //       .catch(error => {
-        //         res.status(500).json({ error });
-        //       });
-        //     // res.status(200).json({ data });
-        //   })
-        //   .catch(error => {
-        //     res.status(500).json({ error });
-        //   });
     }
     all(req, res) {
         mongoose_1.connection.db
@@ -122,20 +109,6 @@ class GeneralRouter {
             }
         });
     }
-    // public getRegression(req: Request, res: Response): void {
-    //   const numX = req.params.numX;
-    //   const data: Array<{ x: number[]; y: number[] }> = req.body;
-    //   const regression = new smr.Regression({ numX: numX, numY: 1 });
-    //   data.forEach(item => {
-    //     regression.push(item);
-    //   });
-    //   // regression.push({ x: , y: [250] });
-    //   // regression.push({ x: [40, 50], y: [500] });
-    //   // regression.push({ x: [50, 80], y: [600] });
-    //   const coefficients = regression.calculateCoefficients();
-    //   res.status(200).json({ calculateCoefficients: coefficients });
-    //   console.log(regression.hypothesize({ x: [1, 2] }));
-    // }
     brainTS(req, res) {
         // Recibe data
         const tableName = req.body.tableName;

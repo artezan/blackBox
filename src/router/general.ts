@@ -16,7 +16,7 @@ export class GeneralRouter {
     // usuario
     const emailUser = req.headers.email;
     // tipo
-    const typeDoc: string = <string>req.headers.typeDoc;
+    const type: string = <string>req.headers.type;
     // nombre de tabla
     const tableName = req.params.tableName;
     // obtiene todos para generar la db
@@ -40,7 +40,7 @@ export class GeneralRouter {
               user.tables.push({
                 name: tableName,
                 date: date,
-                typeDoc: typeDoc
+                type: type
               });
               user.save().then(() => {
                 res.status(200).json({ data: data.ops });
