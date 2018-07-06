@@ -4,6 +4,7 @@ const express_1 = require("express");
 const mongoose_1 = require("mongoose");
 const User_1 = require("../models/User");
 const brain = require("brain.js");
+const __1 = require("..");
 class GeneralRouter {
     constructor() {
         this.router = express_1.Router();
@@ -20,6 +21,8 @@ class GeneralRouter {
         const arrDocuments = req.body;
         // obtiene fecha actual
         const date = new Date(Date.now());
+        // veridfica que no exista
+        mongoose_1.connection.db.collection(tableName).drop();
         // genera collection
         mongoose_1.connection.db.createCollection(tableName, (error, collection) => {
             if (error) {
@@ -32,12 +35,25 @@ class GeneralRouter {
                 // actualiza tables en user
                 User_1.default.findOne({ email: emailUser })
                     .then(user => {
-                    user.tables.push({
-                        name: tableName,
-                        date: date,
-                        type: type
-                    });
+                    const hasTableIndex = user.tables.findIndex(table => table.name === tableName);
+                    if (hasTableIndex !== -1) {
+                        user.tables[hasTableIndex] = {
+                            name: tableName,
+                            date: date,
+                            type: type
+                        };
+                    }
+                    else {
+                        user.tables.push({
+                            name: tableName,
+                            date: date,
+                            type: type
+                        });
+                    }
                     user.save().then(() => {
+                        // emite upload/avisa que se actualiza
+                        __1.io.emit("GET_USER", "getTable");
+                        __1.io.emit("GET_TABLE", tableName);
                         res.status(200).json({ data: data.ops });
                     });
                 })
@@ -100,6 +116,10 @@ class GeneralRouter {
                         }
                     });
                     data.save().then(() => {
+                        // emit delete
+                        __1.io.emit("GET_USER", "getTable");
+                        __1.io.emit("GET_TABLE", tableName);
+                        // resp
                         res
                             .status(200)
                             .json({ data: "borrado" })

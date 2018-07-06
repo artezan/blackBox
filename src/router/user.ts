@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express";
 import User from "../models/User";
-
 export class UserRouter {
   public router: Router;
 
@@ -21,7 +20,6 @@ export class UserRouter {
 
   public one(req: Request, res: Response): void {
     const username: string = req.params.username;
-
     User.findOne({ email: username })
       .then(data => {
         res.status(200).json({ data });

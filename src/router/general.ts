@@ -1,8 +1,16 @@
 import { Request, Response, Router } from "express";
-import { model, Schema, Document, connection, Types } from "mongoose";
+import {
+  model,
+  Schema,
+  Document,
+  connection,
+  Types,
+  Collection
+} from "mongoose";
 import User, { IUser } from "../models/User";
 import * as smr from "smr";
 import * as brain from "brain.js";
+import { io } from "..";
 
 export class GeneralRouter {
   public router: Router;
@@ -24,6 +32,10 @@ export class GeneralRouter {
     // obtiene fecha actual
     const date = new Date(Date.now());
 
+    // veridfica que no exista
+
+    connection.db.collection(tableName).drop();
+
     // genera collection
 
     connection.db.createCollection(tableName, (error, collection) => {
@@ -37,12 +49,26 @@ export class GeneralRouter {
           // actualiza tables en user
           User.findOne({ email: emailUser })
             .then(user => {
-              user.tables.push({
-                name: tableName,
-                date: date,
-                type: type
-              });
+              const hasTableIndex = user.tables.findIndex(
+                table => table.name === tableName
+              );
+              if (hasTableIndex !== -1) {
+                user.tables[hasTableIndex] = {
+                  name: tableName,
+                  date: date,
+                  type: type
+                };
+              } else {
+                user.tables.push({
+                  name: tableName,
+                  date: date,
+                  type: type
+                });
+              }
               user.save().then(() => {
+                // emite upload/avisa que se actualiza
+                io.emit("GET_USER", "getTable");
+                io.emit("GET_TABLE", tableName);
                 res.status(200).json({ data: data.ops });
               });
             })
@@ -104,6 +130,10 @@ export class GeneralRouter {
             }
           });
           data.save().then(() => {
+            // emit delete
+            io.emit("GET_USER", "getTable");
+            io.emit("GET_TABLE", tableName);
+            // resp
             res
               .status(200)
               .json({ data: "borrado" })

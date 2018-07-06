@@ -7,10 +7,15 @@ debug("ts-express:server");
 const port = normalizePort(process.env.PORT || 3000);
 server_1.default.set("port", port);
 console.log(`Server listening on port ${port}`);
-const server = http.createServer(server_1.default);
-server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
+/**
+ * Create HTTP server.
+ */
+exports.server = http.createServer(server_1.default);
+// Socket.io for real time communication
+exports.io = require("socket.io").listen(exports.server);
+exports.server.listen(port);
+exports.server.on("error", onError);
+exports.server.on("listening", onListening);
 function normalizePort(val) {
     const port = typeof val === "string" ? parseInt(val, 10) : val;
     if (isNaN(port)) {
@@ -44,8 +49,26 @@ function onError(error) {
     }
 }
 function onListening() {
-    const addr = server.address();
+    const addr = exports.server.address();
     const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
     debug(`Listening on ${bind}`);
 }
+/**
+ * Socket events
+ */
+exports.io.sockets.on("connection", function (socket) {
+    console.log("Socket connected");
+    // // Socket event for POST
+    // socket.on("POST", function(tableName) {
+    //   io.emit("GET", tableName);
+    // });
+    // // Socket event for DELETE
+    // socket.on("DELETE", function(tableName) {
+    //   io.emit("GET", tableName);
+    // });
+    // // Socket event for PUT
+    // socket.on("PUT", function(tableName) {
+    //   io.emit("GET", tableName);
+    // });
+});
 //# sourceMappingURL=index.js.map

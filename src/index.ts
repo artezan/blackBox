@@ -1,6 +1,5 @@
 import * as debug from "debug";
 import * as http from "http";
-
 import Server from "./server";
 
 debug("ts-express:server");
@@ -9,8 +8,12 @@ const port = normalizePort(process.env.PORT || 3000);
 Server.set("port", port);
 
 console.log(`Server listening on port ${port}`);
-
-const server = http.createServer(Server);
+/**
+ * Create HTTP server.
+ */
+export const server = http.createServer(Server);
+// Socket.io for real time communication
+export const io = require("socket.io").listen(server);
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
@@ -52,3 +55,22 @@ function onListening(): void {
   const bind = typeof addr === "string" ? `pipe ${addr}` : `port ${addr.port}`;
   debug(`Listening on ${bind}`);
 }
+/**
+ * Socket events
+ */
+io.sockets.on("connection", function(socket) {
+  console.log("Socket connected");
+  // // Socket event for POST
+  // socket.on("POST", function(tableName) {
+  //   io.emit("GET", tableName);
+  // });
+  // // Socket event for DELETE
+  // socket.on("DELETE", function(tableName) {
+  //   io.emit("GET", tableName);
+  // });
+
+  // // Socket event for PUT
+  // socket.on("PUT", function(tableName) {
+  //   io.emit("GET", tableName);
+  // });
+});
