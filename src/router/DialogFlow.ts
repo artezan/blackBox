@@ -81,7 +81,7 @@ export class DialogFlow {
         conv.ask(
           new BasicCard({
             title: "Esta es la información de " + option.toString(),
-            text: `**Numero de Elemntos:**
+            text: `**Numero de Elementos:**
                     ${tableSelect.arrSize}  \n ***Tipo Caracter:*** ${
               tableSelect.numString
             } elementos  \n ***Tipo Numérico:*** ${

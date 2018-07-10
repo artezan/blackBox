@@ -3,9 +3,41 @@ import * as fs from "fs";
 import * as mammoth from "mammoth";
 import * as multer from "multer";
 const uploadService = multer({ storage: multer.memoryStorage() });
+class LF {
+  public static Instance = function(): LF {
+    if (this._instance) {
+      return this._instance;
+    } else {
+      return (this._instance = new this());
+    }
+  };
+  countWords2(sentence) {
+    const index = {};
+    const words = sentence
+      .replace(/[.,?!;()"'-]/g, " ")
+      .replace(/\s+/g, " ")
+      .toLowerCase()
+      .split(" ");
+
+    words.forEach(word => {
+      if (!index.hasOwnProperty(word)) {
+        index[word] = 0;
+      }
+      index[word]++;
+    });
+    return index;
+  }
+}
 
 export class FileUpload {
   public router: Router;
+  // public Instance = function() {
+  //   if (this._instance) {
+  //     return this._instance;
+  //   } else {
+  //     return (this._instance = new this());
+  //   }
+  // };
 
   constructor() {
     this.router = Router();
@@ -19,25 +51,12 @@ export class FileUpload {
       .then(result => {
         const text = result.value; // The raw text
         const messages = result.messages;
-        const index = {};
-        const words = text
-          .replace(/[.,?!;()"'-]/g, " ")
-          .replace(/\s+/g, " ")
-          .toLowerCase()
-          .split(" ");
-
-        words.forEach(word => {
-          if (!index.hasOwnProperty(word)) {
-            index[word] = 0;
-          }
-          index[word]++;
-        });
-        // const index =  t.countWords(text);
+        const index = LF.Instance().countWords2(text);
         res.status(200).json({ data: index });
       })
       .done();
   }
-  async countWords(sentence) {
+  countWords(sentence) {
     const promise = new Promise<any>((resolve, reject) => {
       const index = {};
       const words = sentence
@@ -55,7 +74,7 @@ export class FileUpload {
 
       resolve(index);
     });
-    const result = await promise;
+    const result = promise;
     return result;
   }
   countWords2(sentence) {
@@ -76,6 +95,8 @@ export class FileUpload {
   }
   public routes() {
     this.router.post("/", uploadService.single("file"), this.all);
+    // .post("/", uploadService.single("file"), this.all)
+    // .bind(FileUpload);
     // this.router.get("/:username", this.one);
     // this.router.post("/", this.create);
     // this.router.put("/:username", this.update);

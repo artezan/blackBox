@@ -1,18 +1,42 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const mammoth = require("mammoth");
 const multer = require("multer");
 const uploadService = multer({ storage: multer.memoryStorage() });
+class LF {
+    countWords2(sentence) {
+        const index = {};
+        const words = sentence
+            .replace(/[.,?!;()"'-]/g, " ")
+            .replace(/\s+/g, " ")
+            .toLowerCase()
+            .split(" ");
+        words.forEach(word => {
+            if (!index.hasOwnProperty(word)) {
+                index[word] = 0;
+            }
+            index[word]++;
+        });
+        return index;
+    }
+}
+LF.Instance = function () {
+    if (this._instance) {
+        return this._instance;
+    }
+    else {
+        return (this._instance = new this());
+    }
+};
 class FileUpload {
+    // public Instance = function() {
+    //   if (this._instance) {
+    //     return this._instance;
+    //   } else {
+    //     return (this._instance = new this());
+    //   }
+    // };
     constructor() {
         this.router = express_1.Router();
         this.routes();
@@ -25,43 +49,29 @@ class FileUpload {
             .then(result => {
             const text = result.value; // The raw text
             const messages = result.messages;
-            const index = {};
-            const words = text
-                .replace(/[.,?!;()"'-]/g, " ")
-                .replace(/\s+/g, " ")
-                .toLowerCase()
-                .split(" ");
-            words.forEach(word => {
-                if (!index.hasOwnProperty(word)) {
-                    index[word] = 0;
-                }
-                index[word]++;
-            });
-            // const index =  t.countWords(text);
+            const index = LF.Instance().countWords2(text);
             res.status(200).json({ data: index });
         })
             .done();
     }
     countWords(sentence) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const promise = new Promise((resolve, reject) => {
-                const index = {};
-                const words = sentence
-                    .replace(/[.,?!;()"'-]/g, " ")
-                    .replace(/\s+/g, " ")
-                    .toLowerCase()
-                    .split(" ");
-                words.forEach(function (word) {
-                    if (!index.hasOwnProperty(word)) {
-                        index[word] = 0;
-                    }
-                    index[word]++;
-                });
-                resolve(index);
+        const promise = new Promise((resolve, reject) => {
+            const index = {};
+            const words = sentence
+                .replace(/[.,?!;()"'-]/g, " ")
+                .replace(/\s+/g, " ")
+                .toLowerCase()
+                .split(" ");
+            words.forEach(function (word) {
+                if (!index.hasOwnProperty(word)) {
+                    index[word] = 0;
+                }
+                index[word]++;
             });
-            const result = yield promise;
-            return result;
+            resolve(index);
         });
+        const result = promise;
+        return result;
     }
     countWords2(sentence) {
         const index = {};
@@ -80,6 +90,8 @@ class FileUpload {
     }
     routes() {
         this.router.post("/", uploadService.single("file"), this.all);
+        // .post("/", uploadService.single("file"), this.all)
+        // .bind(FileUpload);
         // this.router.get("/:username", this.one);
         // this.router.post("/", this.create);
         // this.router.put("/:username", this.update);

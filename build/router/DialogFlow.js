@@ -64,7 +64,7 @@ class DialogFlow {
                 conv.ask("Esta es la información de la tabla seleccionada  ");
                 conv.ask(new actions_on_google_1.BasicCard({
                     title: "Esta es la información de " + option.toString(),
-                    text: `**Numero de Elemntos:**
+                    text: `**Numero de Elementos:**
                     ${tableSelect.arrSize}  \n ***Tipo Caracter:*** ${tableSelect.numString} elementos  \n ***Tipo Numérico:*** ${tableSelect.numNumber} elementos `,
                     image: new actions_on_google_1.Image({
                         url: "https://theartezan.xyz/data-storage.png",
