@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "server": "tsc && nodemon ./build/index.js",
-    "start": "tsc && nodemon ./build/index.js",
+    "start": "tsc && node ./build/index.js",
     "ts:watch": "tsc -w"
   },
   "dependencies": {
