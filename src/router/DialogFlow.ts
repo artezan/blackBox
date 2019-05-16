@@ -88,7 +88,7 @@ export class DialogFlow {
               tableSelect.numNumber
             } elementos `,
             image: new Image({
-              url: "https://theartezan.xyz/data-storage.png",
+              url: "http://theartezan.xyz/data-storage.png",
               alt: "Image alternate text"
             })
           })
