@@ -5,8 +5,9 @@
   "license": "MIT",
   "scripts": {
     "server": "tsc && nodemon ./build/index.js",
-    "start": "tsc && node ./build/index.js",
-    "ts:watch": "tsc -w"
+    "start": " node ./build/index.js",
+    "ts:watch": "tsc -w",
+    "build:ts": "tsc"
   },
   "dependencies": {
     "@types/socket.io": "^1.4.36",

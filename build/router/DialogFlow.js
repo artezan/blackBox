@@ -67,7 +67,7 @@ class DialogFlow {
                     text: `**Numero de Elementos:**
                     ${tableSelect.arrSize}  \n ***Tipo Caracter:*** ${tableSelect.numString} elementos  \n ***Tipo Numérico:*** ${tableSelect.numNumber} elementos `,
                     image: new actions_on_google_1.Image({
-                        url: "https://theartezan.xyz/data-storage.png",
+                        url: "http://theartezan.xyz/data-storage.png",
                         alt: "Image alternate text"
                     })
                 }));
