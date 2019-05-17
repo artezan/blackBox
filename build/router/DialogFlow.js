@@ -95,7 +95,7 @@ class DialogFlow {
             arrTop5.forEach((table, i) => {
                 tableList[table[keys[0]].toString()] = {
                     title: `${table[keys[0]]}`,
-                    description: `Elemento ${i + 1}  \n${keys[2]}: ${table[keys[2]]}`
+                    description: `Elemento ${i + 1}  \n${keys[12]}: ${table[keys[12]]}`
                 };
             });
             conv.ask("Estos son algunos elementos en la tabla");
